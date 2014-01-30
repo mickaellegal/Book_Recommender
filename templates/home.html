@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+	<title>Book Recommender</title>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}"></link>
+	<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+</head>
+
+<style>
+	
+	img{
+    display: inline-block;
+    margin-left: 335px;
+	}
+
+	h2{
+	text-align: center;
+	font-family:'Helvetica Neue', sans-serif;
+	font-size:40px;
+	color:#69D2E7
+	}
+
+</style>
+
+<body>
+	<div class="container">
+	<hr>
+	<a id="book_pic" href="http://www.mickaellegal.com/blog" title="book_pic"><img src="http://ebookfriendly.com/wp-content/uploads/2012/11/Book-iPad-wallpaper-Flying-Letters-526x394.jpg" width="263" height="197"></a>
+	<hr>
+		<h2>Book Recommender</h2>
+		<br>
+		<br>
+		<p style ="font-family: 'Helvetica Neue', sans-serif; font-size:17px;">Please select a book that you like and the recommender will suggest some other books you may enjoy.</p>
+		<br>
+		<form id="book" method="POST" action="/" class="navbar-form pull-left">
+			<label class="control-label"><!-- Please select a book you like:  --><select id="book" name="book">
+					<option value="The Lovely Bones: A Novel">The Lovely Bones: A Novel</option>
+					<option value="Wild Animus">Wild Animus</option>
+					<option value="The Da Vinci Code">The Da Vinci Code</option>
+					<option value="The Secret Life of Bees">The Secret Life of Bees</option>
+					<option value="The Nanny Diaries: A Novel">The Nanny Diaries: A Novel</option>
+					<option value="The Red Tent">The Red Tent</option>
+					<option value="Bridget Jones's Diary">Bridget Jones's Diary</option>
+					<option value="A Painted House">A Painted House</option>
+					<option value="Life of Pi">Life of Pi</option>
+					<option value="Harry Potter and the Chamber of Secrets">Harry Potter and the Chamber of Secrets</option>
+					<option value="Divine Secrets of the Ya-Ya Sisterhood: A Novel">Divine Secrets of the Ya-Ya Sisterhood: A Novel</option>
+					<option value="Angels & Demons">Angels & Demons</option>
+					<option value="Harry Potter and the Sorcerer's Stone">Harry Potter and the Sorcerer's Stone</option>
+					
+			</select>
+
+			<input type='submit' value="Check it out!" class="btn btn-primary">
+		</form>
+
+	</div>
+	<br>
+	<div class="container">
+			<div id="results"></div>
+	</div>
+
+	<script type="text/javascript">
+	$(function() {
+
+		$.fn.serializeObject = function()
+		{
+		    var o = {};
+		    var a = this.serializeArray();
+		    $.each(a, function() {
+		        if (o[this.name] !== undefined) {
+		            if (!o[this.name].push) {
+		                o[this.name] = [o[this.name]];
+		            }
+		            o[this.name].push(this.value || '');
+		        } else {
+		            o[this.name] = this.value || '';
+		        }
+		    });
+		    return o;
+		};
+	})
+
+	$("#book").submit(function(e) {
+		e.preventDefault()
+		var payload = $("#book").serializeObject()
+        
+		$.post("/", payload, function(data) {
+			if (data.results) {
+				$("#results").children().remove()
+				
+				rows = []
+
+				console.log(data.results)
+				for (var i = 0; i < data.results.length; i++) {
+					row = data.results[i]
+					row = "<tr><td>" + row[1] + "</td><td>" + row[2] + "</td></tr>"
+					rows.push(row)
+				}
+				table = "<table class='table table-striped'><tr><th>Books you may like</th><th>Correlation Coefficient</th></tr>" + rows.join("") + "</table>"
+				$("#results").append(table);
+		}
+		})
+		return false;
+	})
+	</script>
+
+</body>
+
+
+</html>
